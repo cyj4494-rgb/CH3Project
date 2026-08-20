@@ -20,4 +20,6 @@ public:
 protected:
 	UPROPERTY(EditAnywhere, BluePrintReadWrite, Category = "Item");
 	int32 PointValue;
+
+	virtual void ActivateItem(AActor* Activator) override;
 };

@@ -9,5 +9,5 @@ AHealingBaseItem::AHealingBaseItem() {
 }
 
 void AHealingBaseItem::ActivateItem(AActor* Activator) {
-	DestroyItem();
+	Destroy();
 }

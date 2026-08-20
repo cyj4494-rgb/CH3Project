@@ -14,7 +14,7 @@ public:
 	AHealingBaseItem();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = "Item");
-	float HealAmount;
+	int32 HealAmount;
 
 	void virtual ActivateItem(AActor* Activator) override;
 };
