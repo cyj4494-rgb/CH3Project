@@ -72,9 +72,6 @@ FVector ASpawnVolume::GetRandomPointInVolume() const
 	);
 }
 
-
-
-
 void ASpawnVolume::SpawnItem(TSubclassOf<AActor> ItemClass)
 {
 	if (!ItemClass) return;

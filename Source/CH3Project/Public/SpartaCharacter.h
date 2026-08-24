@@ -19,6 +19,7 @@ private:
 	float NormalSpeed;
 	float SprintSpeed;
 	float SprintSpeedMultiplier;
+	
 
 public:
 	// Sets default values for this character's properties
@@ -28,8 +29,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Cameara")
 	UCameraComponent* CameraComp;
 
+	UFUNCTION(BlueprintPure , Category = "Health")
+	float GetHealth() const;
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void AddHealth(float Amount);
+
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	UFUNCTION()
 	void Move(const FInputActionValue& value);
 	UFUNCTION()
@@ -42,6 +49,11 @@ protected:
 	void StartSprint(const FInputActionValue& value);
 	UFUNCTION()
 	void StopSprint(const FInputActionValue& value);
-	
 
+	void OnDeath();
+	
+	UPROPERTY(EditAnywhere , BlueprintReadWrite , Category = "health")
+	float MaxHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "health")
+	float Health;
 };

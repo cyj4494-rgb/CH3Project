@@ -7,4 +7,6 @@
 ASpartaGameMode::ASpartaGameMode() {
 
 	DefaultPawnClass = ASpartaCharacter::StaticClass();
+	PlayerControllerClass = ASpartaCharacter::StaticClass();
+	GameStateClass = ASpartaCharacter::StaticClass();
 }

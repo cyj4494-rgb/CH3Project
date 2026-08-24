@@ -2,6 +2,8 @@
 
 
 #include "CoinItem.h"
+#include "engine/world.h"
+#include "SpartaGameStateBase.h"
 
 ACoinItem::ACoinItem() {
 	PointValue = 0;
@@ -10,6 +12,11 @@ ACoinItem::ACoinItem() {
 
 void ACoinItem::ActivateItem(AActor* Activator) {
 	if (Activator && Activator->ActorHasTag("Player")) {
+		if (UWorld* World = GetWorld()) {
+			if (ASpartaGameStateBase* GameState = World->GetGameState<ASpartaGameStateBase>()) {
+				GameState->AddScore(PointValue);
+			}
+		}
 		DestroyItem();
 	}
 }

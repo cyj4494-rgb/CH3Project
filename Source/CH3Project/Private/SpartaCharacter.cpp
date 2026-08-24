@@ -23,12 +23,15 @@ ASpartaCharacter::ASpartaCharacter()
 	CameraComp->SetupAttachment(SpringArmComp , USpringArmComponent::SocketName);
 	CameraComp->bUsePawnControlRotation = false;
 
-	NormalSpeed = 300.0f;
+	NormalSpeed = 600.0f;
 	SprintSpeedMultiplier = 1.7f;
 	SprintSpeed = NormalSpeed * SprintSpeedMultiplier;
 	
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+
+	MaxHealth = 100.0f;
+	Health = MaxHealth;
 }
 
 
@@ -143,3 +146,26 @@ void ASpartaCharacter::StopSprint(const FInputActionValue& value)
 	}
 }
 
+void ASpartaCharacter::OnDeath() {}
+
+float ASpartaCharacter::GetHealth() const {
+	return Health;
+}
+
+void ASpartaCharacter::AddHealth(float Amount)
+{
+	
+	Health = FMath::Clamp(Health + Amount, 0.0f, MaxHealth);
+	UE_LOG(LogTemp, Warning, TEXT("Health increased to : %f"), Health);
+}
+
+float ASpartaCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) {
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
+	UE_LOG(LogTemp, Warning, TEXT("Health decreased to : %f"), Health);
+	if (Health <= 0.0f) {
+		OnDeath();
+	}
+	return ActualDamage;
+}

@@ -3,6 +3,7 @@
 
 #include "MineItem.h"
 #include "TimerManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
 
 
@@ -39,7 +40,13 @@ void AMineItem::Explode() {
 	{
 		if (Actor && Actor->ActorHasTag("Player"))
 		{
-
+			UGameplayStatics::ApplyDamage(
+				Actor,
+				ExplosionDamage,
+				nullptr,
+				this,
+				UDamageType::StaticClass()
+			);
 		}
 	}
 	DestroyItem();

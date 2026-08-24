@@ -2,6 +2,7 @@
 
 
 #include "HealingBaseItem.h"
+#include "SpartaCharacter.h"
 
 AHealingBaseItem::AHealingBaseItem() {
 	HealAmount = 20.0f;
@@ -9,5 +10,13 @@ AHealingBaseItem::AHealingBaseItem() {
 }
 
 void AHealingBaseItem::ActivateItem(AActor* Activator) {
-	Destroy();
+	if (Activator && Activator->ActorHasTag("Player")) {
+		
+		if (ASpartaCharacter* PlayerCharacter = Cast<ASpartaCharacter>(Activator))
+		{
+			PlayerCharacter->AddHealth(HealAmount);
+		}
+
+		DestroyItem();
+	}
 }
