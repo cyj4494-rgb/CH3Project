@@ -4,14 +4,20 @@
 #include "SpartaPlayerController.h"
 #include "EnhancedInputSubSystems.h"
 #include "Blueprint/UserWidget.h"
+#include "SpartaGameInstance.h"
 #include "SpartaGameState.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/TextBlock.h"
 ASpartaPlayerController::ASpartaPlayerController() :
 	InputMappingContext(nullptr) , 
 	MoveAction(nullptr),
 	LookAction(nullptr),
 	SprintAction(nullptr),
 	JumpAction(nullptr),
-	HUDWidgetClass(nullptr)
+	HUDWidgetClass(nullptr),
+	HUDWidgetInstance(nullptr),
+	MainMenuWidgetClass(nullptr),
+	MainMenuWidgetInstance(nullptr)
 {
 
 }
@@ -32,20 +38,94 @@ void ASpartaPlayerController::BeginPlay() {
 			}
 		}
 	}
-
-	if (HUDWidgetClass) {
-		HUDWidgetInstance = CreateWidget<UUserWidget>(this, HUDWidgetClass);
-		if (HUDWidgetInstance)
-		{
-			HUDWidgetInstance->AddToViewport();
-		}
-	}
-	ASpartaGameState* SpartaGameState = GetWorld() ? GetWorld()->GetGameState<ASpartaGameState>() : nullptr;
-	if (SpartaGameState) {
-		SpartaGameState->UpdateHUD();
+	FString CurrentMapName = GetWorld()->GetMapName();
+	if (CurrentMapName.Contains("MenuLevel")) {
+		ShowMainMenu(false);
 	}
 }
 
 UUserWidget* ASpartaPlayerController::GetHUDWidget() const {
 	return HUDWidgetInstance;
+}
+
+void ASpartaPlayerController::ShowMainMenu(bool bIsRestart)
+{
+
+	if (HUDWidgetInstance)
+	{
+		HUDWidgetInstance->RemoveFromParent();
+		HUDWidgetInstance = nullptr;
+	}
+
+	if (MainMenuWidgetInstance)
+	{
+		MainMenuWidgetInstance->RemoveFromParent();
+		MainMenuWidgetInstance = nullptr;
+	}
+
+	if (MainMenuWidgetClass)
+	{
+		MainMenuWidgetInstance = CreateWidget<UUserWidget>(this, MainMenuWidgetClass);
+
+		if (MainMenuWidgetInstance)
+		{
+			MainMenuWidgetInstance->AddToViewport();
+
+			bShowMouseCursor = true;
+			SetInputMode(FInputModeUIOnly());
+
+			UWidget* Widget =
+				MainMenuWidgetInstance->GetWidgetFromName(TEXT("StartButtonText"));
+
+			if (UTextBlock* ButtonText = Cast<UTextBlock>(Widget))
+			{
+				if (bIsRestart)
+				{
+					ButtonText->SetText(
+						FText::FromString(TEXT("ReStart"))
+					);
+				}
+				else
+				{
+					ButtonText->SetText(
+						FText::FromString(TEXT("Start"))
+					);
+				}
+			}
+		}
+	}
+}
+
+void ASpartaPlayerController::ShowGameHUD() {
+	if (HUDWidgetInstance) {
+		HUDWidgetInstance->RemoveFromParent();
+		HUDWidgetInstance = nullptr;
+	}
+	if (MainMenuWidgetInstance) {
+		MainMenuWidgetInstance->RemoveFromParent();
+		MainMenuWidgetInstance = nullptr;
+	}
+	if (HUDWidgetClass) {
+		HUDWidgetInstance = CreateWidget<UUserWidget>(this, HUDWidgetClass);
+		if (HUDWidgetInstance) {
+			HUDWidgetInstance->AddToViewport();
+
+			bShowMouseCursor = false;
+			SetInputMode(FInputModeGameOnly());
+		}
+		
+		ASpartaGameState* SpartaGameState = GetWorld() ? GetWorld()->GetGameState<ASpartaGameState>() : nullptr;
+		if (SpartaGameState) {
+			SpartaGameState->UpdateHUD();
+		}
+	}
+
+}
+
+void ASpartaPlayerController::StartGame() {
+	if (USpartaGameInstance* SpartaGameInstance = Cast<USpartaGameInstance>(UGameplayStatics::GetGameInstance(this))) {
+		SpartaGameInstance->CurrentLevelIndex = 0;
+		SpartaGameInstance->TotalScore = 0;
+	}
+	UGameplayStatics::OpenLevel(GetWorld(), FName("BasicLevel"));
 }

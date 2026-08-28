@@ -14,7 +14,7 @@ ASpartaGameState::ASpartaGameState() {
 	Score = 0;
 	SpawnedCoinCount = 0;
 	CollectedCoinCount = 0;
-	LevelDuration = 30.0f;
+	LevelDuration = 5.0f;
 	CurrentLevelIndex = 0;
 	MaxLevels = 3;
 }
@@ -52,6 +52,12 @@ void ASpartaGameState::AddScore(int32 Amount)
 
 void ASpartaGameState::StartLevel()
 {
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController()) {
+		if (ASpartaPlayerController* SpartaPlayerController = Cast<ASpartaPlayerController>(PlayerController)) {
+			SpartaPlayerController->ShowGameHUD();
+		}
+	}
+
 	if (UGameInstance* GameInstance = GetGameInstance())
 	{
 		USpartaGameInstance* SPartaGameInstance = Cast<USpartaGameInstance>(GameInstance);
@@ -79,7 +85,6 @@ void ASpartaGameState::StartLevel()
 			}
 		}
 	}
-	UpdateHUD();
 
 	GetWorldTimerManager().SetTimer(
 		LevelTimerHandle,
@@ -88,10 +93,6 @@ void ASpartaGameState::StartLevel()
 		LevelDuration,
 		false
 	);
-
-	UE_LOG(LogTemp, Warning, TEXT("Level %d start! , spawn %d coin"),
-		CurrentLevelIndex + 1 ,
-		SpawnedCoinCount);
 }
 
 void ASpartaGameState::OnLevelTimeUp() {
@@ -135,8 +136,12 @@ void ASpartaGameState::EndLevel() {
 }
 
 void ASpartaGameState::OnGameOver() {
-	UpdateHUD();
-	UE_LOG(LogTemp, Warning, TEXT("Game OVer!!"));
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController()) {
+		if (ASpartaPlayerController* SpartaPlayerController = Cast<ASpartaPlayerController>(PlayerController)) {
+			SpartaPlayerController->ShowMainMenu(true);
+		}
+	}
+	
 }
 
 void ASpartaGameState::UpdateHUD() {
