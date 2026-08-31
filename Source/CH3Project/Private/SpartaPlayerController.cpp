@@ -81,15 +81,25 @@ void ASpartaPlayerController::ShowMainMenu(bool bIsRestart)
 			{
 				if (bIsRestart)
 				{
-					ButtonText->SetText(
-						FText::FromString(TEXT("ReStart"))
-					);
+					ButtonText->SetText(FText::FromString(TEXT("ReStart")));
+
 				}
 				else
 				{
 					ButtonText->SetText(
-						FText::FromString(TEXT("Start"))
-					);
+						FText::FromString(TEXT("Start")));
+				}
+			}
+			if (bIsRestart) {
+				UFunction* PlayAnumFuc = MainMenuWidgetInstance->FindFunction(FName("PlayGameOverAnim"));
+				if (PlayAnumFuc) {
+					MainMenuWidgetInstance->ProcessEvent(PlayAnumFuc, nullptr);
+				}
+
+				if (UTextBlock* TotalScoreText = Cast<UTextBlock>(MainMenuWidgetInstance->GetWidgetFromName("TotalScoreText"))) {
+					if (USpartaGameInstance* SpartaGameInstance = Cast<USpartaGameInstance>(UGameplayStatics::GetGameInstance(this))) {
+						TotalScoreText->SetText(FText::FromString(FString::Printf(TEXT("Total Score : %d"), SpartaGameInstance->TotalScore)));
+					}
 				}
 			}
 		}
@@ -128,4 +138,5 @@ void ASpartaPlayerController::StartGame() {
 		SpartaGameInstance->TotalScore = 0;
 	}
 	UGameplayStatics::OpenLevel(GetWorld(), FName("BasicLevel"));
+	SetPause(false);
 }

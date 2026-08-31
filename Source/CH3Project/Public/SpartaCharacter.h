@@ -3,8 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/Character.h"
 #include "SpartaCharacter.generated.h"
+
 
 class USpringArmComponent;
 class UCameraComponent;
@@ -28,13 +30,18 @@ public:
 	USpringArmComponent* SpringArmComp;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Cameara")
 	UCameraComponent* CameraComp;
+	UPROPERTY(VisibleAnywhere , BlueprintReadOnly , Category = "UI")
+	UWidgetComponent* OverHeadWidget;
 
 	UFUNCTION(BlueprintPure , Category = "Health")
 	float GetHealth() const;
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void AddHealth(float Amount);
 
+	
+
 protected:
+	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	UFUNCTION()
@@ -51,7 +58,8 @@ protected:
 	void StopSprint(const FInputActionValue& value);
 
 	void OnDeath();
-	
+	void UpdateOverHeadHP();
+
 	UPROPERTY(EditAnywhere , BlueprintReadWrite , Category = "health")
 	float MaxHealth;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "health")

@@ -138,6 +138,7 @@ void ASpartaGameState::EndLevel() {
 void ASpartaGameState::OnGameOver() {
 	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController()) {
 		if (ASpartaPlayerController* SpartaPlayerController = Cast<ASpartaPlayerController>(PlayerController)) {
+			SpartaPlayerController->SetPause(true);
 			SpartaPlayerController->ShowMainMenu(true);
 		}
 	}
