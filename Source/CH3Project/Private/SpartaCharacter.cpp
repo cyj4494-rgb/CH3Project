@@ -193,6 +193,6 @@ void ASpartaCharacter::UpdateOverHeadHP() {
 	if (!OverHeadWidgetInstance) return;
 
 	if (UTextBlock* HPText = Cast<UTextBlock>(OverHeadWidgetInstance->GetWidgetFromName(TEXT("OverHeadHP")))) {
-		HPText->SetText(FText::FromString(FString::Printf(TEXT("%0.fd / %0.f"), Health, MaxHealth)));
+		HPText->SetText(FText::FromString(FString::Printf(TEXT("%0.f / %0.f"), Health, MaxHealth)));
 	}
 }

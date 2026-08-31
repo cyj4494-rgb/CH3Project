@@ -22,6 +22,11 @@ public:
 	float ExplosionDamage;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = "Item");
 	int32 ExplosionRadius;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Effects");
+	UParticleSystem* ExplosionParticle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Effects");
+	USoundBase* ExplosionSound;
+	bool bHasExploded;
 
 	FTimerHandle ExplosionTimerHandle;
 
