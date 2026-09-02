@@ -69,18 +69,6 @@ void ABaseItem::ActivateItem(AActor* Activator)
 			GetActorLocation()
 		);
 	}
-	if (Particle) {
-		FTimerHandle DestroyParticleHandle;
-
-		GetWorld()->GetTimerManager().SetTimer(
-			DestroyParticleHandle,
-			[Particle]() {
-				Particle->DestroyComponent();
-			},
-			2.0f,
-			false
-		);
-	}
 }
 
 void ABaseItem::DestroyItem() {

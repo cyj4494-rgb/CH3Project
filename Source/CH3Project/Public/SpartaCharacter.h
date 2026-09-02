@@ -21,7 +21,6 @@ private:
 	float NormalSpeed;
 	float SprintSpeed;
 	float SprintSpeedMultiplier;
-	
 
 public:
 	// Sets default values for this character's properties
@@ -37,6 +36,12 @@ public:
 	float GetHealth() const;
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void AddHealth(float Amount);
+
+	float GetSpeed() const;
+
+	void ApplySlow();
+	void RemoveSlow();
+	bool IsSlowed();
 
 	
 
@@ -64,4 +69,11 @@ protected:
 	float MaxHealth;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "health")
 	float Health;
+
+	bool bIsSlowed;
+	bool bIsSprinting;
+	float SlowMultiplier;
+	FTimerHandle SlowTimerHandle;
+
+	
 };

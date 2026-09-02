@@ -38,6 +38,10 @@ ASpartaCharacter::ASpartaCharacter()
 
 	MaxHealth = 100.0f;
 	Health = MaxHealth;
+
+	bIsSlowed = false;
+	bIsSprinting = false;
+	SlowMultiplier = 0.5f;
 }
 
 
@@ -144,15 +148,29 @@ void ASpartaCharacter::Look(const FInputActionValue& value)
 
 void ASpartaCharacter::StartSprint(const FInputActionValue& value)
 {
+	bIsSprinting = true;
+
 	if (GetCharacterMovement()) {
-		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+		if (bIsSlowed) {
+			GetCharacterMovement()->MaxWalkSpeed = SprintSpeed * SlowMultiplier;
+		}
+		else {
+			GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+		}
 	}
 }
 
 void ASpartaCharacter::StopSprint(const FInputActionValue& value)
 {
+	bIsSprinting = false;
+
 	if (GetCharacterMovement()) {
-		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+		if (bIsSlowed) {
+			GetCharacterMovement()->MaxWalkSpeed = NormalSpeed * SlowMultiplier;
+		}
+		else {
+			GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+		}
 	}
 }
 
@@ -195,4 +213,57 @@ void ASpartaCharacter::UpdateOverHeadHP() {
 	if (UTextBlock* HPText = Cast<UTextBlock>(OverHeadWidgetInstance->GetWidgetFromName(TEXT("OverHeadHP")))) {
 		HPText->SetText(FText::FromString(FString::Printf(TEXT("%0.f / %0.f"), Health, MaxHealth)));
 	}
+}
+
+void ASpartaCharacter::ApplySlow()
+{
+	bIsSlowed = true;
+
+	if (GetCharacterMovement())
+	{
+		if (bIsSprinting)
+		{
+			GetCharacterMovement()->MaxWalkSpeed =
+				SprintSpeed * SlowMultiplier;
+		}
+		else
+		{
+			GetCharacterMovement()->MaxWalkSpeed =
+				NormalSpeed * SlowMultiplier;
+		}
+	}
+
+	GetWorldTimerManager().SetTimer(
+		SlowTimerHandle,
+		this,
+		&ASpartaCharacter::RemoveSlow,
+		3.0f,
+		false
+	);
+}
+
+void ASpartaCharacter::RemoveSlow() {
+	bIsSlowed = false;
+
+	if (GetCharacterMovement())
+	{
+		if (bIsSprinting)
+		{
+			GetCharacterMovement()->MaxWalkSpeed =
+				SprintSpeed;
+		}
+		else
+		{
+			GetCharacterMovement()->MaxWalkSpeed =
+				NormalSpeed;
+		}
+	}
+}
+
+float ASpartaCharacter::GetSpeed() const {
+	return GetCharacterMovement()->MaxWalkSpeed;
+}
+
+bool ASpartaCharacter::IsSlowed() {
+	return bIsSlowed;
 }
